@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const tasksRouter = require('./routes/Task');
 
-mongoose.connect('mongodb://localhost/todo_db', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost:27017/proplanner-db', { useNewUrlParser: true });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
