@@ -1,11 +1,14 @@
 const express = require('express');
 
 const app = express();
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const tasksRouter = require('./routes/Task');
 
-mongoose.connect('mongodb://localhost:27017/proplanner-db', { useNewUrlParser: true });
+dotenv.config({ path: './.env' });
+
+mongoose.connect(process.env.CONNECTION_STRING, { useNewUrlParser: true });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
