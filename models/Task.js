@@ -48,7 +48,7 @@ const taskSchema = new mongoose.Schema({
 * @param {Function} callback - A callback function to handle the result of the query
 */
 taskSchema.statics.getAllTasks = (callback) => {
-  this.find({}, callback);
+  Task.find({}, callback);
 };
 
 /**
@@ -57,7 +57,7 @@ taskSchema.statics.getAllTasks = (callback) => {
 * @param {Function} callback - A callback function to handle the result of the query
 */
 taskSchema.statics.addTask = (task, callback) => {
-  this.create(task, callback);
+  Task.create(task, callback);
 };
 
 /**
@@ -66,7 +66,7 @@ taskSchema.statics.addTask = (task, callback) => {
 * @param {Function} callback - A callback function to handle the result of the query
 */
 taskSchema.statics.getTaskById = (id, callback) => {
-  this.findById(id, callback);
+  Task.findById(id, callback);
 };
 
 const Task = mongoose.model('Task', taskSchema);
