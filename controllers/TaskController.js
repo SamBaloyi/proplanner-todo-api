@@ -1,4 +1,4 @@
-const Task = require('../models/Task');
+const Task = require('../models/TaskModel');
 
 /**
  * This function will get all the tasks in the database and return them in the response.
@@ -8,23 +8,23 @@ const Task = require('../models/Task');
  * The getAllTasks route will respond with all the tasks in the database.
  */
 exports.getAllTasks = (req, res) => {
-  Task.getAllTasks((err, tasks) => {
-    if (err) return res.status(500).send(err);
-    return res.json(tasks);
-  });
+	Task.getAllTasks((err, tasks) => {
+		if (err) return res.status(500).send(err);
+		return res.json(tasks);
+	});
 };
 
 /** This function gets all the subtasks for a given subtask
  * The subtasks are stored in the Subtasks collection
  * The subtask ID is passed in the request body
  * The subtask title is returned in the response body
-*/
+ */
 exports.getSubtasks = (req, res) => {
-  Task.findById(req.params.id, (err, task) => {
-    if (err) return res.status(500).send(err);
-    if (!task) return res.status(404).send('Task not found');
-    return res.json(task.subTasks);
-  });
+	Task.findById(req.params.id, (err, task) => {
+		if (err) return res.status(500).send(err);
+		if (!task) return res.status(404).send('Task not found');
+		return res.json(task.subTasks);
+	});
 };
 
 /**
@@ -34,26 +34,26 @@ exports.getSubtasks = (req, res) => {
  * the task is passed as JSON in the response
  */
 exports.getTaskById = (req, res) => {
-  Task.getTaskById(req.params.id, (err, task) => {
-    if (err) return res.status(500).send(err);
-    if (!task) return res.status(404).send('Task not found');
-    return res.json(task);
-  });
+	Task.getTaskById(req.params.id, (err, task) => {
+		if (err) return res.status(500).send(err);
+		if (!task) return res.status(404).send('Task not found');
+		return res.json(task);
+	});
 };
 
 /**
  * This function returns a subtask with the specified id, if it exists.
  * The function is called by the getSubtaskById function in the subtask controller.
-*/
+ */
 
 exports.getSubtaskById = (req, res) => {
-  Task.findById(req.params.id, (err, task) => {
-    if (err) return res.status(500).send(err);
-    if (!task) return res.status(404).send('Task not found');
-    const subTask = task.subTasks.id(req.params.subId);
-    if (!subTask) return res.status(404).send('Sub-task not found');
-    return res.json(subTask);
-  });
+	Task.findById(req.params.id, (err, task) => {
+		if (err) return res.status(500).send(err);
+		if (!task) return res.status(404).send('Task not found');
+		const subTask = task.subTasks.id(req.params.subId);
+		if (!subTask) return res.status(404).send('Sub-task not found');
+		return res.json(subTask);
+	});
 };
 
 /**
@@ -61,10 +61,10 @@ exports.getSubtaskById = (req, res) => {
  * It is called when the user clicks the "Add Task" button.
  */
 exports.addTask = (req, res) => {
-  Task.addTask(req.body, (err, task) => {
-    if (err) return res.status(500).send(err);
-    return res.json(task);
-  });
+	Task.addTask(req.body, (err, task) => {
+		if (err) return res.status(500).send(err);
+		return res.json(task);
+	});
 };
 
 /**
@@ -72,16 +72,16 @@ exports.addTask = (req, res) => {
  * The subtask is added to the subtasks array in the task.
  */
 exports.addSubtask = (req, res) => {
-  Task.findByIdAndUpdate(
-    req.params.id,
-    { $push: { subTasks: req.body } },
-    { new: true },
-    (err, task) => {
-      if (err) return res.status(500).send(err);
-      if (!task) return res.status(404).send('Task not found');
-      return res.json(task);
-    },
-  );
+	Task.findByIdAndUpdate(
+		req.params.id,
+		{ $push: { subTasks: req.body } },
+		{ new: true },
+		(err, task) => {
+			if (err) return res.status(500).send(err);
+			if (!task) return res.status(404).send('Task not found');
+			return res.json(task);
+		},
+	);
 };
 
 /**
@@ -90,11 +90,16 @@ exports.addSubtask = (req, res) => {
  * It also updates the date of the last update
  */
 exports.updateTask = (req, res) => {
-  Task.findByIdAndUpdate(req.params.id, req.body, { new: true }, (err, task) => {
-    if (err) return res.status(500).send(err);
-    if (!task) return res.status(404).send('Task not found');
-    return res.json(task);
-  });
+	Task.findByIdAndUpdate(
+		req.params.id,
+		req.body,
+		{ new: true },
+		(err, task) => {
+			if (err) return res.status(500).send(err);
+			if (!task) return res.status(404).send('Task not found');
+			return res.json(task);
+		},
+	);
 };
 
 /**
@@ -102,29 +107,29 @@ exports.updateTask = (req, res) => {
  * taskId is in the request body, subtaskId is in the URL
  */
 exports.updateSubtask = (req, res) => {
-  Task.findById(req.params.id, (err, task) => {
-    if (err) return res.status(500).send(err);
-    if (!task) return res.status(404).send('Task not found');
-    const subTask = task.subTasks.id(req.params.subId);
-    if (!subTask) return res.status(404).send('Sub-task not found');
-    subTask.set(req.body);
-    return task.save((taskerr) => {
-      if (err) return res.status(500).send(taskerr);
-      return res.json({ message: 'Sub-task updated successfully' });
-    });
-  });
+	Task.findById(req.params.id, (err, task) => {
+		if (err) return res.status(500).send(err);
+		if (!task) return res.status(404).send('Task not found');
+		const subTask = task.subTasks.id(req.params.subId);
+		if (!subTask) return res.status(404).send('Sub-task not found');
+		subTask.set(req.body);
+		return task.save((taskerr) => {
+			if (err) return res.status(500).send(taskerr);
+			return res.json({ message: 'Sub-task updated successfully' });
+		});
+	});
 };
 
 /** This function deletes a task from the database
  * It is called when the user clicks the delete button
  * It takes the task ID as a parameter
  * It returns the deleted task
-*/
+ */
 exports.deleteTask = (req, res) => {
-  Task.findByIdAndDelete(req.params.id, (err) => {
-    if (err) return res.status(500).send(err);
-    return res.json({ message: 'Task deleted successfully' });
-  });
+	Task.findByIdAndDelete(req.params.id, (err) => {
+		if (err) return res.status(500).send(err);
+		return res.json({ message: 'Task deleted successfully' });
+	});
 };
 
 /* This function deletes a subtask from the database.
@@ -132,15 +137,15 @@ exports.deleteTask = (req, res) => {
  * It takes the subtask ID from the URL and deletes the subtask from the database.
  */
 exports.deleteSubtask = (req, res) => {
-  Task.findById(req.params.id, (err, task) => {
-    if (err) return res.status(500).send(err);
-    if (!task) return res.status(404).send('Task not found');
-    const subTask = task.subTasks.id(req.params.subId);
-    if (!subTask) return res.status(404).send('Sub-task not found');
-    subTask.remove();
-    return task.save((taskerr) => {
-      if (err) return res.status(500).send(taskerr);
-      return res.json({ message: 'Sub-task deleted successfully' });
-    });
-  });
+	Task.findById(req.params.id, (err, task) => {
+		if (err) return res.status(500).send(err);
+		if (!task) return res.status(404).send('Task not found');
+		const subTask = task.subTasks.id(req.params.subId);
+		if (!subTask) return res.status(404).send('Sub-task not found');
+		subTask.remove();
+		return task.save((taskerr) => {
+			if (err) return res.status(500).send(taskerr);
+			return res.json({ message: 'Sub-task deleted successfully' });
+		});
+	});
 };
