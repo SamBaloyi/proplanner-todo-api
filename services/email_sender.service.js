@@ -16,16 +16,15 @@ const getTransport = () => {
 	return transport;
 };
 
-exports.sendEmail = (mailOptions) => {
-	const {
-		recipientEmail, subject, text, html,
-	} = mailOptions;
+exports.sendOTP = (recepientEmail, OTP) => {
+	// This is to be changed to a template
+	const OTP_HTML = `<h1>OTP: ${OTP}</h1>`;
 	getTransport().sendMail({
 		from: process.env.EMAIL_USERNAME,
-		to: recipientEmail,
-		subject,
-		text,
-		html,
+		to: recepientEmail,
+		subject: 'Verification code for account setup',
+		text: `OTP: ${OTP}`,
+		html: OTP_HTML,
 	}).then((info) => {
 		console.log('Message sent: %s', info.messageId);
 	}).catch((error) => {

@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const { sendOTP } = require('../services/email_sender.service');
 
 const router = express.Router();
 
@@ -16,16 +17,29 @@ router.post('/signup', (req, res) => {
 
 	bcrypt.hash(user.password, 10, (err, hash) => {
 		user.password = hash;
+		const OTP = Math.floor(1000 + Math.random() * 9000);
+		user.OTP = OTP;
 		user.save((error) => {
 			if (error) {
 				return res.status(400).json({
 					error,
 				});
 			}
+			sendOTP(user.email, OTP);
 			return res.status(200).json({
-				message: 'Sign up successful!',
+				message: 'Sign up successful! OTP has been sent to your email.',
 			});
 		});
+	});
+});
+
+router.post('/authenticate', (req, res) => {
+	User.findOne({ email: req.body.email.toLowerCase(), OTP: req.body.OTP }, (err, user) => {
+		const { OTP } = req.body;
+		if (err) return res.status(500).send('Error on the server.');
+		if (!user) return res.status(404).send('No user found.');
+		if (OTP !== user.OTP) return res.status(401).send({ message: 'Invalid OTP!' });
+		res.status(200).send({ message: 'OTP verified!' });
 	});
 });
 
