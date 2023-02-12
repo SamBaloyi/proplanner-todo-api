@@ -1,4 +1,4 @@
-const Task = require('../models/TaskModel');
+const Task = require('../models/task.model');
 
 /**
  * This function will get all the tasks in the database and return them in the response.

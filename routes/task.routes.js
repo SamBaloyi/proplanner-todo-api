@@ -1,7 +1,7 @@
 const express = require('express');
 
 const taskRoutes = express.Router();
-const TaskController = require('../controllers/TaskController');
+const TaskController = require('../controllers/task.controller');
 
 /**
 * GET all tasks
