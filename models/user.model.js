@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
+	isAuthenticated: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 userSchema.statics.signUp = (user, callback) => {
