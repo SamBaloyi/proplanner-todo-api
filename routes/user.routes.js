@@ -63,8 +63,7 @@ router.post('/authenticate', (req, res) => {
 			if (!user) return res.status(404).send('No user found.');
 			if (otpData.otp !== req.body.otp) return res.status(401).send({ message: 'Invalid OTP!' });
 			if (otpData.expiration < Date.now()) return res.status(401).send({ message: 'OTP expired!' });
-			// create a token
-			return res.status(200).send({ message: 'OTP verified!' });
+			User.updateOne({ _id: req.body.userId }, { $set: { isAuthenticated: true } }, () => res.status(200).send({ message: 'OTP verified!' }));
 		});
 	});
 });
