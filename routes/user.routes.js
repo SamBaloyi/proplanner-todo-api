@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 // const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const Session = require('../models/session.model');
 const OTP = require('../models/otp.model');
 const { sendOTP } = require('../services/email_sender.service');
 
@@ -14,6 +15,7 @@ router.post('/signup', (req, res) => {
 		if (err) return res.status(500).send('Error on the server.');
 		if (userOnDB) return res.status(400).send({ message: 'Account already exists!' });
 		const user = new User({
+			userId: req.body.userId,
 			fullName: req.body.fullName,
 			email: req.body.email.toLowerCase(),
 			password: req.body.password,
@@ -83,37 +85,21 @@ router.post('/signin', (req, res) => {
 		const secret = process.env.JWT_SECRET;
 		const options = { expiresIn: '1m' };
 		const token = jwt.sign(payload, secret, options);
-		return res.status(200).send({ token });
+		const session = new Session({
+			userId: user._id,
+			token,
+			expiration: Date.now() + 2592000000,
+		});
+		session.save((error) => {
+			if (error) {
+				return res.status(400).json(
+					{ error: 'Error on server' },
+				);
+			}
+			return res.status(200).json({
+				message: 'User logged in successfully',
+				token,
+			});
+		});
 	});
 });
-
-module.exports = router;
-// passport.use(new GoogleStrategy({
-// 	clientID: process.env.GOOGLE_CLIENT_ID,
-// 	clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-// 	callbackURL: process.env.GOOGLE_CALLBACK_URL,
-// }, (accessToken, refreshToken, profile, done) => {
-// 	User.findOne({ googleId: profile.id })
-// 		.then((existingUser) => {
-// 			if (existingUser) {
-// 				// we already have a record with the given profile ID
-// 				done(null, existingUser);
-// 			} else {
-// 				// we don't have a user record with this ID, make a new record
-// 				new User({ googleId: profile.id })
-// 					.save()
-// 					.then((user) => done(null, user));
-// 			}
-// 		});
-// }));
-
-// // Google OAuth route
-// router.get('/auth/google', passport.authenticate('google', {
-// 	scope: ['profile', 'email'],
-// }));
-
-// // callback route for Google to redirect to
-// router.get('/auth/google/callback', passport.authenticate('google'), (req, res) => {
-// 	// redirect to dashboard or profile page
-// 	res.redirect('/');
-// });

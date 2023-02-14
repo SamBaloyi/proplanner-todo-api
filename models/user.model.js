@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
+	userID: {
+		type: String,
+		required: true,
+	},
 	fullName: {
 		type: String,
 		required: true,
@@ -16,6 +20,10 @@ const userSchema = new mongoose.Schema({
 		required: true,
 	},
 	isAuthenticated: {
+		type: Boolean,
+		default: false,
+	},
+	twoFactorAuth: {
 		type: Boolean,
 		default: false,
 	},
