@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
 	},
 	twoFactorAuth: {
 		type: Boolean,
-		default: false,
+		default: true,
 	},
 });
 
@@ -41,8 +41,8 @@ userSchema.methods.updateInfo = (update, callback) => {
 	this.updateOne(update, callback);
 };
 
-userSchema.methods.setUp2FA = (secret, callback) => {
-	this.updateOne({ twoFactorAuth: secret }, callback);
+userSchema.methods.setUp2FA = (enabled, callback) => {
+	this.updateOne({ twoFactorAuth: enabled }, callback);
 };
 
 userSchema.methods.comparePassword = (password, callback) => {

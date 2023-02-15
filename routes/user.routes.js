@@ -30,6 +30,7 @@ router.post('/signup', (req, res) => {
 				}
 				return res.status(200).json({
 					message: 'User created successfully',
+					id: user._id,
 				});
 			});
 		});
@@ -52,6 +53,7 @@ router.post('/requestOTP', (req, res) => {
 		User.findOne({ _id: req.body.userId }, (err, user) => {
 			if (err) return res.status(500).send('Error on the server.');
 			if (!user) return res.status(404).send('No user found.');
+			if (!user.twoFactorAuth) return res.status(200).send({ message: '2FA not enabled! You can sign in' });
 			sendOTP(user.email, generatedOTP);
 			return res.status(200).send({ message: 'OTP sent!' });
 		});
@@ -67,6 +69,14 @@ router.post('/authenticate', (req, res) => {
 			if (otpData.expiration < Date.now()) return res.status(401).send({ message: 'OTP expired!' });
 			User.updateOne({ _id: req.body.userId }, { $set: { isAuthenticated: true } }, () => res.status(200).send({ message: 'OTP verified!' }));
 		});
+	});
+});
+
+router.post('/two-factor-auth', (req, res) => {
+	User.updateOne({ _id: req.body.userId }, (err, user) => {
+		if (err) return res.status(500).send('Error on the server.');
+		if (!user) return res.status(404).send('No user found.');
+		user.setUp2FA(req.body.twoFactorEnabled === true);
 	});
 });
 
